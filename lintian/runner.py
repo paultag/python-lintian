@@ -4,7 +4,7 @@ import subprocess
 from .protocol import process
 
 def lintian(path, pedantic=False, info=False, experimental=False):
-    args = []
+    args = ["lintian", "--show-overrides"]
 
     if pedantic:
         args.append("--pedantic")
@@ -13,5 +13,13 @@ def lintian(path, pedantic=False, info=False, experimental=False):
     if experimental:
         args.append("-E")
 
-    output = subprocess.check_output(["echo", "Hello World!"])
+    args.append(path)
+    big_error = False
+
+    try:
+        output = subprocess.check_output(args)
+    except subprocess.CalledProcessError as e:
+        output = e.output
+        big_error = True
+
     return process(output)
